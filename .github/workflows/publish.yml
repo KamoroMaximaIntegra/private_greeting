@@ -12,23 +12,30 @@ jobs:
       contents: read
       
     steps:
-      # Langkah 1: Checkout repository (Tetap sama)
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Langkah 2: GANTI DARI SETUP DART MENJADI SETUP FLUTTER
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          # Anda bisa ganti versi Flutter sesuai kebutuhan project
           flutter-version: '3.22.2' 
           channel: 'stable'
 
-      # Langkah 3: Gunakan 'flutter pub' untuk autentikasi
-      - name: Authenticate with GitHub Packages
+      # ================== LANGKAH DEBUG BARU ==================
+      # Langkah ini akan mencetak nilai sebenarnya dari variabel konteks
+      # ke dalam log GitHub Actions Anda.
+      - name: 'Debug: Print Context Variables'
         run: |
-          echo "${{ secrets.DART_PUBLISH_TOKEN }}" | flutter pub token add https://npm.pkg.github.com/${{ github.repository_owner }}
+          echo "Repository Owner from variable: ${{ github.repository_owner }}"
+          echo "Hardcoded Owner: KamoroMaximaIntegra"
+          echo "Actor (who triggered): ${{ github.actor }}"
+          echo "Full Target URL being used: https://npm.pkg.github.com/${{ github.repository_owner }}"
 
-      # Langkah 4: Gunakan 'flutter pub' untuk publish
+      # ================== PERUBAHAN PADA AUTENTIKASI ==================
+      # Kita akan menggunakan URL yang di-hardcode untuk memastikan targetnya benar.
+      - name: Authenticate with GitHub Packages (Using Hardcoded URL)
+        run: |
+          echo "${{ secrets.DART_PUBLISH_TOKEN }}" | flutter pub token add https://npm.pkg.github.com/KamoroMaximaIntegra
+
       - name: Publish package
         run: flutter pub publish --force

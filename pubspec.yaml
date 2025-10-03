@@ -2,9 +2,10 @@ name: private_greeting
 description: A simple private package for a Proof of Concept.
 version: 1.0.1
 homepage: https://github.com/KamoroMaximaIntegra/private_greeting
+repository: https://github.com/KamoroMaximaIntegra/private_greeting
 
 # Baris ini SANGAT PENTING
-publish_to: 'https://npm.pkg.github.com/KamoroMaximaIntegra/'
+publish_to: 'https://npm.pkg.github.com/KamoroMaximaIntegra'
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
