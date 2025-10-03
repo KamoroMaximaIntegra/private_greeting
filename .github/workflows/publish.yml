@@ -1,42 +1,34 @@
-# Nama workflow yang akan muncul di tab "Actions" GitHub
 name: Publish Flutter Package
 
-# Pemicu (trigger): Kapan workflow ini harus dijalankan?
-# Di sini, kita menjalankannya setiap kali ada tag baru yang di-push
-# dengan format v*.*.* (contoh: v1.0.0, v1.2.3)
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*' # Pola untuk tag versi
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
 
-# Daftar pekerjaan (jobs) yang akan dieksekusi
 jobs:
   publish:
-    # Menggunakan OS Ubuntu versi terbaru untuk menjalankan job
     runs-on: ubuntu-latest
-    
-    # Izin yang dibutuhkan job ini untuk berinteraksi dengan repo
     permissions:
       contents: read
       
     steps:
-      # Langkah 1: Mengunduh kode dari repositori Anda
+      # Langkah 1: Checkout repository (Tetap sama)
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Langkah 2: Menyiapkan environment Dart/Flutter
-      - name: Setup Dart
-        uses: dart-lang/setup-dart@v1
+      # Langkah 2: GANTI DARI SETUP DART MENJADI SETUP FLUTTER
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          # Anda bisa ganti versi Flutter sesuai kebutuhan project
+          flutter-version: '3.22.2' 
+          channel: 'stable'
 
-      # Langkah 3: Autentikasi ke GitHub Packages
-      # Perintah ini mengambil token dari Secret yang kita buat tadi
-      # dan menggunakannya untuk login ke registry GitHub
+      # Langkah 3: Gunakan 'flutter pub' untuk autentikasi
       - name: Authenticate with GitHub Packages
         run: |
-          echo "${{ secrets.DART_PUBLISH_TOKEN }}" | dart pub token add https://npm.pkg.github.com/${{ github.repository_owner }}
+          echo "${{ secrets.DART_PUBLISH_TOKEN }}" | flutter pub token add https://npm.pkg.github.com/${{ github.repository_owner }}
 
-      # Langkah 4: Publikasikan package
-      # --force digunakan agar tidak ada prompt konfirmasi (Y/n)
-      # yang akan membuat proses otomatis berhenti
+      # Langkah 4: Gunakan 'flutter pub' untuk publish
       - name: Publish package
-        run: dart pub publish --force
+        run: flutter pub publish --force
