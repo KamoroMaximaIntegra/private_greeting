@@ -1,0 +1,42 @@
+# Nama workflow yang akan muncul di tab "Actions" GitHub
+name: Publish Flutter Package
+
+# Pemicu (trigger): Kapan workflow ini harus dijalankan?
+# Di sini, kita menjalankannya setiap kali ada tag baru yang di-push
+# dengan format v*.*.* (contoh: v1.0.0, v1.2.3)
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*' # Pola untuk tag versi
+
+# Daftar pekerjaan (jobs) yang akan dieksekusi
+jobs:
+  publish:
+    # Menggunakan OS Ubuntu versi terbaru untuk menjalankan job
+    runs-on: ubuntu-latest
+    
+    # Izin yang dibutuhkan job ini untuk berinteraksi dengan repo
+    permissions:
+      contents: read
+      
+    steps:
+      # Langkah 1: Mengunduh kode dari repositori Anda
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Langkah 2: Menyiapkan environment Dart/Flutter
+      - name: Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      # Langkah 3: Autentikasi ke GitHub Packages
+      # Perintah ini mengambil token dari Secret yang kita buat tadi
+      # dan menggunakannya untuk login ke registry GitHub
+      - name: Authenticate with GitHub Packages
+        run: |
+          echo "${{ secrets.DART_PUBLISH_TOKEN }}" | dart pub token add https://npm.pkg.github.com/${{ github.repository_owner }}
+
+      # Langkah 4: Publikasikan package
+      # --force digunakan agar tidak ada prompt konfirmasi (Y/n)
+      # yang akan membuat proses otomatis berhenti
+      - name: Publish package
+        run: dart pub publish --force

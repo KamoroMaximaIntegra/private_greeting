@@ -1,6 +1,6 @@
 name: private_greeting
 description: A simple private package for a Proof of Concept.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/KamoroMaximaIntegra/private_greeting
 
 # Baris ini SANGAT PENTING
