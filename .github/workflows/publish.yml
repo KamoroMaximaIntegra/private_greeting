@@ -8,9 +8,14 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    
+    # ================== PERUBAHAN PALING PENTING ==================
+    # Baris ini memberikan izin kepada GITHUB_TOKEN untuk menulis (publish)
+    # ke GitHub Packages.
     permissions:
       contents: read
-      
+      packages: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,24 +23,15 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2' 
+          flutter-version: '3.22.2'
           channel: 'stable'
 
-      # ================== LANGKAH DEBUG BARU ==================
-      # Langkah ini akan mencetak nilai sebenarnya dari variabel konteks
-      # ke dalam log GitHub Actions Anda.
-      - name: 'Debug: Print Context Variables'
-        run: |
-          echo "Repository Owner from variable: ${{ github.repository_owner }}"
-          echo "Hardcoded Owner: KamoroMaximaIntegra"
-          echo "Actor (who triggered): ${{ github.actor }}"
-          echo "Full Target URL being used: https://npm.pkg.github.com/${{ github.repository_owner }}"
-
-      # ================== PERUBAHAN PADA AUTENTIKASI ==================
-      # Kita akan menggunakan URL yang di-hardcode untuk memastikan targetnya benar.
-      - name: Authenticate with GitHub Packages (Using Hardcoded URL)
-        run: |
-          echo "${{ secrets.DART_PUBLISH_TOKEN }}" | flutter pub token add https://npm.pkg.github.com/KamoroMaximaIntegra
+      # ================== METODE AUTENTIKASI BARU ==================
+      # Kita sekarang menggunakan secrets.GITHUB_TOKEN yang otomatis tersedia.
+      # URL-nya cukup ke domain utama karena token ini sudah terikat
+      # dengan konteks repositori.
+      - name: Authenticate with GitHub Packages (using GITHUB_TOKEN)
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | flutter pub token add https://npm.pkg.github.com
 
       - name: Publish package
         run: flutter pub publish --force
